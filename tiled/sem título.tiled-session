@@ -1,0 +1,109 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "fileStates": {
+        "bridge.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "collision.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "florest.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "house.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "map.tmx": {
+            "expandedGroupLayers": [
+                5
+            ],
+            "scale": 0.75,
+            "selectedLayer": 3,
+            "viewCenter": {
+                "x": 511.33333333333326,
+                "y": 300.6666666666667
+            }
+        },
+        "places.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "recources.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "recources2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        },
+        "things.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "tree2.tsx": {
+            "scaleInDock": 0.75,
+            "scaleInEditor": 1
+        },
+        "trees.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "trees_2.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "last.externalTilesetPath": "/home/ayron/web-game",
+    "last.imagePath": "/home/ayron/web-game/forest_",
+    "map.height": 28,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 16,
+    "map.tileWidth": 16,
+    "map.width": 54,
+    "mapScene.enableWorlds": true,
+    "openFiles": [
+        "map.tmx",
+        "tree2.tsx",
+        "places.tsx",
+        "things.tsx",
+        "bridge.tsx",
+        "collision.tsx",
+        "house.tsx",
+        "trees.tsx",
+        "florest.tsx",
+        "recources.tsx"
+    ],
+    "project": "sem título.tiled-project",
+    "recentFiles": [
+        "recources.tsx",
+        "florest.tsx",
+        "trees.tsx",
+        "house.tsx",
+        "collision.tsx",
+        "bridge.tsx",
+        "things.tsx",
+        "places.tsx",
+        "tree2.tsx",
+        "map.tmx",
+        "trees_2.tsx",
+        "recources2.tsx"
+    ],
+    "tileset.lastUsedFilter": "Ficheiros de conjunto de tiles Tiled (*.tsx *.xml)",
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.useTransparentColor": true
+}
