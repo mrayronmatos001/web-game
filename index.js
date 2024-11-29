@@ -1,13 +1,11 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
-const map = new Image();
-map.src = "./images/little-town.png";
-const player = new Image();
-player.src = "./images/playerDown.png";
-const w = canvas.width = 1024;
-const h = canvas.height = 576;
-let mapWidth = -200;
-let mapHeight = -630;
+const image = new Image();
+image.src = "./images/little-town.png";
+const playerImage = new Image();
+playerImage.src = "./images/playerDown.png";
+canvas.width = 1024;
+canvas.height = 576;
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i+=54){
@@ -24,7 +22,7 @@ class Boundary{
     }
 
     draw(){
-        ctx.fillStyle = 'red'
+        ctx.fillStyle = 'rgba(255, 0, 0, 0)'
         ctx.fillRect(this.position.x, this.position.y, this.width, this.height)
     }
 }
@@ -32,7 +30,7 @@ class Boundary{
 const boundaries = []
 const offset = {
     x: -295,
-    y: -130
+    y: -150
 }
 
 collisionsMap.forEach((row, i) => {
@@ -50,22 +48,50 @@ collisionsMap.forEach((row, i) => {
 })
 
 class Sprite {
-    constructor({position, velocity, map}){
+    constructor({position, velocity, image, frames = { max: 1}}){
         this.position = position
-        this.map = map
+        this.image = image
+        this.frames = frames
+        this.image.onload = () => {
+            this.width = this.image.width / this.frames.max
+            this.height = this.image.height
+            console.log(this.width)
+            console.log(this.height)
+        }
     }
     
     draw() {
-        ctx.drawImage(this.map, this.position.x, this.position.y)
+        ctx.drawImage(
+            this.image,
+            0,
+            0,
+            this.image.width/ this.frames.max,
+            this.image.height,
+            this.position.x,
+            this.position.y,
+            this.image.width/ this.frames.max,
+            this.image.height
+        )
     }
 }
+
+const player = new Sprite({
+    position :{
+        x: canvas.width/2 - 156/8,
+        y: canvas.height/2 + 46
+    },
+    image: playerImage,
+    frames: {
+        max: 6
+    }
+})
 
 const background = new Sprite({
     position: {
         x: offset.x,
         y: offset.y
     },
-     map: map
+    image: image
 })
 
 const keys = {
@@ -84,47 +110,109 @@ const keys = {
 
 }
 
-const testBoundary = new Boundary({
-    position: {
-        x: 400,
-        y: 400
-    }
-})
+const movables = [background, ...boundaries]
 
-const movables = [background, testBoundary]
+function rectangularCollision ({rectangle1, rectangle2}){
+    return (rectangle1.position.x + rectangle1.width >= rectangle2.position.x &&
+        rectangle1.position.x <= rectangle2.position.x + rectangle2.width &&
+        rectangle1.position.y <= rectangle2.position.y + rectangle2.height &&
+        rectangle1.position.y + rectangle1.height >= rectangle2.position.y
+    )
+}
 function animate(){
     window.requestAnimationFrame(animate)
     background.draw()
-    //boundaries.forEach((boundary) =>{
-    //    boundary.draw()
-    //})
-    testBoundary.draw()
-    ctx.drawImage(
-        player,
-        0,
-        0,
-        player.width/6,
-        player.height,
-        w/2 - player.width/8, 
-        h/2 + player.height,
-        player.width/6,
-        player.height
-    )
-    //if (player.position.x + player.width)
+    boundaries.forEach((boundary) =>{
+        boundary.draw()
+   
+    })
+    player.draw()
+
+    let moving = true
     if (keys.w.pressed && lastKey === 'w') {
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: player,
+                    rectangle2: {...boundary, position: {
+                        x: boundary.position.x,
+                        y: boundary.position.y + 3
+                    }}
+                })
+            ) {
+                moving = false
+                break
+            }
+        }
+        if (moving)
         movables.forEach((movable) => {
             movable.position.y +=3
         })
     }else if(keys.a.pressed && lastKey === 'a') {
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: player,
+                    rectangle2: {
+                        ...boundary,
+                        position: {
+                        x: boundary.position.x + 3,
+                        y: boundary.position.y
+                    }}
+                })
+            ) {
+                moving = false
+                break
+            }
+        }
+        if (moving)
         movables.forEach((movable) => {
             movable.position.x +=3
         })
     }else if(keys.d.pressed && lastKey === 'd') {
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: player,
+                    rectangle2: {
+                        ...boundary,
+                        position: {
+                        x: boundary.position.x - 3,
+                        y: boundary.position.y
+                    }}
+                })
+            ) {
+                moving = false
+                break
+            }
+        }
+        if (moving)
         movables.forEach((movable) => {
             movable.position.x -=3
         })
     }
     else if(keys.s.pressed && lastKey === 's') {
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: player,
+                    rectangle2: {
+                        ...boundary,
+                        position: {
+                        x: boundary.position.x,
+                        y: boundary.position.y - 3
+                    }}
+                })
+            ) {
+                moving = false
+                break
+            }
+        }
+        if (moving)
         movables.forEach((movable) => {
             movable.position.y -=3
         })
