@@ -7,12 +7,17 @@
     "expandedProjectPaths": [
         "."
     ],
+    "exportAsImage.useCurrentScale": true,
     "fileStates": {
         "bridge.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
         "collision.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "fances.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
@@ -24,15 +29,20 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "house1_366.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
         "map.tmx": {
             "expandedGroupLayers": [
+                18,
                 5
             ],
-            "scale": 0.75,
-            "selectedLayer": 3,
+            "scale": 3,
+            "selectedLayer": 16,
             "viewCenter": {
-                "x": 511.33333333333326,
-                "y": 300.6666666666667
+                "x": 393,
+                "y": 353.5
             }
         },
         "places.tsx": {
@@ -64,9 +74,11 @@
             "scaleInEditor": 1
         }
     },
+    "last.exportedFilePath": "/home/ayron/web-game/application",
     "last.externalTilesetPath": "/home/ayron/web-game",
     "last.imagePath": "/home/ayron/web-game/forest_",
     "map.height": 28,
+    "map.lastUsedExportFilter": "Ficheiros de mapa JSON (*.tmj *.json)",
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
     "map.tileWidth": 16,
@@ -74,7 +86,6 @@
     "mapScene.enableWorlds": true,
     "openFiles": [
         "map.tmx",
-        "tree2.tsx",
         "places.tsx",
         "things.tsx",
         "bridge.tsx",
@@ -82,10 +93,14 @@
         "house.tsx",
         "trees.tsx",
         "florest.tsx",
-        "recources.tsx"
+        "recources.tsx",
+        "fances.tsx",
+        "house1_366.tsx"
     ],
     "project": "sem título.tiled-project",
     "recentFiles": [
+        "house1_366.tsx",
+        "fances.tsx",
         "recources.tsx",
         "florest.tsx",
         "trees.tsx",
@@ -94,10 +109,8 @@
         "bridge.tsx",
         "things.tsx",
         "places.tsx",
-        "tree2.tsx",
         "map.tmx",
-        "trees_2.tsx",
-        "recources2.tsx"
+        "tree2.tsx"
     ],
     "tileset.lastUsedFilter": "Ficheiros de conjunto de tiles Tiled (*.tsx *.xml)",
     "tileset.lastUsedFormat": "tsx",
