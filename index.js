@@ -12,8 +12,11 @@ const playerRightImage = new Image();
 playerRightImage.src = "./images/playerRight.png";
 const foregroundImage = new Image();
 foregroundImage.src = "./images/foregroundObjects.png";
+const lifeImage = new Image();
+lifeImage.src = "./images/life.png";
 canvas.width = 1024;
 canvas.height = 576;
+i = 0, j = 0, k = 0, contador = 0;
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i+=54){
@@ -40,6 +43,39 @@ collisionsMap.forEach((row, i) => {
     })
 })
 
+const life1 = new lifeSprite({
+    position :{
+        x: canvas.width - 1000,
+        y: canvas.height - 550
+    },
+    image: lifeImage,
+    frames: {
+        max: 2
+    }
+})
+
+const life2 = new lifeSprite({
+    position :{
+        x: canvas.width - 960,
+        y: canvas.height - 550
+    },
+    image: lifeImage,
+    frames: {
+        max: 2
+    }
+})
+
+const life3 = new lifeSprite({
+    position :{
+        x: canvas.width - 920,
+        y: canvas.height - 550
+    },
+    image: lifeImage,
+    frames: {
+        max: 2
+    }  
+})
+
 const player = new Sprite({
     position :{
         x: canvas.width/2 - 156/8,
@@ -56,7 +92,6 @@ const player = new Sprite({
         down: playerDownImage
     }
 })
-console.log(player);
 
 const background = new Sprite({
     position: {
@@ -86,6 +121,12 @@ const keys = {
     },
     d: {
         pressed: false
+    },
+    space: {
+        pressed: false
+    },
+    q: {
+        pressed: false
     }
 
 }
@@ -108,9 +149,27 @@ function animate(){
     })
     player.draw()
     foreground.draw()
+    life1.draw(k)
+    life2.draw(j)
+    life3.draw(i)
 
     let moving = true
     player.moving = false
+    
+    if (keys.space.pressed){
+        if (contador == 0){
+            i = 1
+            keys.space.pressed = false
+        }else if (contador == 1){
+            j = 1
+            keys.space.pressed = false 
+        }else if (contador == 2){   
+            k = 1
+            keys.space.pressed = false
+        }
+        contador++;
+    }
+
     if (keys.w.pressed && lastKey === 'w') {
         player.moving = true
         player.image = player.sprites.up
@@ -230,6 +289,14 @@ window.addEventListener('keydown', (e) => {
             keys.d.pressed = true
             lastKey = 'd'
             break;
+        case ' ':
+            keys.space.pressed = true
+            lastKey = ' '
+            break;
+        case 'q':
+            keys.q.pressed = true
+            lastKey = 'q'
+            break;
     }
 })
 
@@ -246,6 +313,12 @@ window.addEventListener('keyup', (e) => {
             break;
         case 'd':
             keys.d.pressed = false
+            break;
+        case ' ':
+            keys.space.pressed = false
+            break;
+        case 'q':
+            keys.q.pressed = false
             break;
     }
 })
