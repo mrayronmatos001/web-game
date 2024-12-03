@@ -16,9 +16,19 @@ const lifeImage = new Image();
 lifeImage.src = "./images/life.png";
 const animalsImage = new Image();
 animalsImage.src = "./images/animals.png";
+const playerLeftAttackImage = new Image();
+playerLeftAttackImage.src = "./images/playerAtkLeft.png";
+const playerRightAttackImage = new Image();
+playerRightAttackImage.src = "./images/playerAtkRight.png";
+const playerUpAttackImage = new Image();
+playerUpAttackImage.src = "./images/playerAtkUp.png";
+const playerDownAttackImage = new Image();
+playerDownAttackImage.src = "./images/playerAtkDown.png";
+
 canvas.width = 1024;
 canvas.height = 576;
 i = 0, j = 0, k = 0, contador = 0;
+marcadorA = false, marcadorS = true, marcadorD = false, marcadorW = false;
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i+=54){
@@ -44,6 +54,42 @@ collisionsMap.forEach((row, i) => {
         )
     })
 })
+
+const attackLeft = new attackSprite({
+    position: {
+        x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
+        y: canvas.height / 2 + 46      // Posição Y
+    },
+    image: playerLeftAttackImage,      // Imagem do sprite
+    frames: { max: 4 }                 // Número máximo de frames
+});
+
+const attackUp = new attackSprite({
+    position: {
+        x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
+        y: canvas.height / 2 + 46      // Posição Y
+    },
+    image: playerUpAttackImage,      // Imagem do sprite
+    frames: { max: 4 }                 // Número máximo de frames
+});
+
+const attackDown = new attackSprite({
+    position: {
+        x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
+        y: canvas.height / 2 + 46      // Posição Y
+    },
+    image: playerDownAttackImage,      // Imagem do sprite
+    frames: { max: 4 }                 // Número máximo de frames
+});
+
+const attackRight = new attackSprite({
+    position: {
+        x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
+        y: canvas.height / 2 + 46      // Posição Y
+    },
+    image: playerRightAttackImage,      // Imagem do sprite
+    frames: { max: 4 }                 // Número máximo de frames
+});
 
 const life1 = new lifeSprite({
     position :{
@@ -198,11 +244,19 @@ function animate(){
         boundary.draw()
    
     })
-    player.draw()
+
+    if (keys.space.pressed && marcadorA == true){
+        attackLeft.draw()
+    }else if (keys.space.pressed && marcadorW == true){
+        attackUp.draw()    
+    }else if (keys.space.pressed && marcadorS == true){
+        attackDown.draw()    
+    }else if (keys.space.pressed && marcadorD == true){
+        attackRight.draw()    
+    }else{
+        player.draw()
+    }
     foreground.draw()
-    life1.draw(k)
-    life2.draw(j)
-    life3.draw(i)
     chicken.draw(0, 25)
     chicken1.draw(0, 35)
     chicken2.draw(0, 30)
@@ -210,25 +264,18 @@ function animate(){
     pig1.draw(32, 35)
     cow.draw(64, 30)
     cow1.draw(64, 35)
+    life1.draw(k)
+    life2.draw(j)
+    life3.draw(i)   
 
     let moving = true
     player.moving = false
-    
-    if (keys.space.pressed){
-        if (contador == 0){
-            i = 1
-            keys.space.pressed = false
-        }else if (contador == 1){
-            j = 1
-            keys.space.pressed = false 
-        }else if (contador == 2){   
-            k = 1
-            keys.space.pressed = false
-        }
-        contador++;
-    }
 
     if (keys.w.pressed && lastKey === 'w') {
+        marcadorA = false;
+        marcadorS = false;
+        marcadorD = false;
+        marcadorW = true;
         player.moving = true
         player.image = player.sprites.up
         for (let i = 0; i < boundaries.length; i++){
@@ -251,6 +298,10 @@ function animate(){
             movable.position.y +=2
         })
     }else if(keys.a.pressed && lastKey === 'a') {
+        marcadorA = true;
+        marcadorS = false;
+        marcadorD = false;
+        marcadorW = false;
         player.moving = true
         player.image = player.sprites.left
         for (let i = 0; i < boundaries.length; i++){
@@ -275,6 +326,10 @@ function animate(){
             movable.position.x +=2
         })
     }else if(keys.d.pressed && lastKey === 'd') {
+        marcadorA = false;
+        marcadorS = false;
+        marcadorD = true;
+        marcadorW = false;
         player.moving = true
         player.image = player.sprites.right
         for (let i = 0; i < boundaries.length; i++){
@@ -300,6 +355,10 @@ function animate(){
         })
     }
     else if(keys.s.pressed && lastKey === 's') {
+        marcadorA = false;
+        marcadorS = true;
+        marcadorD = false;
+        marcadorW = false;
         player.moving = true
         player.image = player.sprites.down
         for (let i = 0; i < boundaries.length; i++){

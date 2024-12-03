@@ -131,3 +131,46 @@ class Animal {
         }
     }
 }
+
+class attackSprite {
+    constructor({ position, image, frames = { max: 4 } }) {
+        this.position = position;
+        this.image = image;
+        this.frames = { ...frames, val: 0, elapsed: 0 };
+        this.size = { width: 34, height: 46 }; // Largura e altura do frame
+        this.image.onload = () => {
+            this.originalWidth = this.image.width;
+            this.originalHeight = this.image.height;
+            this.frameHeight = this.originalHeight; // Define a altura dos frames como a altura da imagem
+        };
+    }
+
+    draw() {
+        const sourceHeight = this.frameHeight; // Usa a altura total da imagem ou a altura dos frames
+        const frameWidth = [28, 64, 37, 27]; // Largura dos frames conforme especificado
+        const sourceX = [0, 28, 92, 129][this.frames.val]; // Valores no eixo X para cada frame
+        const sourceY = 0; // Eixo Y fixo
+
+
+        ctx.drawImage(
+            this.image,
+            sourceX,
+            sourceY,
+            frameWidth[this.frames.val], // Largura específica de cada frame
+            sourceHeight, // Usa a altura total da imagem
+            this.position.x,
+            this.position.y,
+            this.size.width,
+            this.size.height
+        );
+
+        this.frames.elapsed++;
+
+        if (this.frames.elapsed % 10 === 0) {
+            // Alterna o frame
+            this.frames.val = (this.frames.val + 1) % this.frames.max;
+        }
+    
+    }
+}
+
