@@ -24,7 +24,6 @@ class Sprite {
             this.image.height
         )
         if (!this.moving) return
-
         if (this.frames.max > 1) {
             this.frames.elapsed++
         }
@@ -63,8 +62,8 @@ class lifeSprite {
         this.sprites = sprites
     }
 
-    draw(i) {
-        if (i === 0){
+    draw(marcador) {
+        if (!marcador){
         ctx.drawImage(
             this.image,
             32, // Ponto de início no eixo x da imagem
@@ -166,7 +165,7 @@ class attackSprite {
 
         this.frames.elapsed++;
 
-        if (this.frames.elapsed % 10 === 0) {
+        if (this.frames.elapsed % 3 === 0) {
             // Alterna o frame
             this.frames.val = (this.frames.val + 1) % this.frames.max;
         }
@@ -174,3 +173,36 @@ class attackSprite {
     }
 }
 
+class monsterSprite {
+    constructor({position, image, frames = {max: 1}, sprites, colision}) {
+        this.position = position
+        this.image = image
+        this.frames = {...frames, val: 0, elapsed: 0}
+        this.image.onload = () => {
+            this.width = this.image.width / this.frames.max
+            this.height = this.image.height
+        }
+        this.sprites = sprites
+        this.colision = colision
+    }
+
+    draw() {
+        ctx.drawImage(
+            this.image,
+            0, // Ponto de início no eixo x da imagem
+            this.frames.val * this.height/4  , // Ponto de início no eixo y da imagem
+            this.image.width/ this.frames.max, 
+            this.height/4, // Altura completa da imagem
+            this.position.x,
+            this.position.y,
+            32, //
+            32 // Altura completa na tela
+        )
+            this.frames.elapsed++;
+
+        if (this.frames.elapsed % 20 === 0) {
+            // Alterna o frame
+            this.frames.val = (this.frames.val + 1) % this.frames.max;
+            }         
+    }        
+}
