@@ -53,11 +53,11 @@ canvas.height = 576;
 let i = 0, j = 0, k = 0, contador = 0;
 let marcadorA = false, marcadorS = true, marcadorD = false, marcadorW = false, marcadorGlobal = false
 let marcador1, marcador2, marcador3, alive1 = true, alive2 = true, alive3 =true
-let ultimaExecucao = 0;
 let contadorMonstro = 0
 let correr, correr1
-
+const alives = [alive1, alive2, alive3]
 const collisionsMap = []
+
 for (let i = 0; i < collisions.length; i+=54){
     collisionsMap.push(collisions.slice(i, 54 + i))
 }
@@ -87,7 +87,7 @@ function range(start, end) {
 }
 
 
-const monster = new monsterSprite({
+const monster = new monsterSprite({ //Monstro Vermelho
     position :{
         x: 400,  
         y: 700,
@@ -99,42 +99,51 @@ const monster = new monsterSprite({
         max: 4
     },
     colision : { //Para definir a posicao do dano
-        x: range(0, 32),
-        y: range(0, 32)
+        x: range(0, 132),
+        y: range(0, 132)
     }
 })
 
 monster.moving = true;
-const monster1 = new monsterSprite({
+
+const monster1 = new monsterSprite({ //Monstro Azul
     position :{
-        x: canvas.width - 600,
-        y: canvas.height + 200,
+        x: 1500,
+        y: 700,
+        xreal: 1795,
+        yreal: 864
     },
     image: monster1Image,
     frames: {
         max: 4
     },
     colision : { //Para definir a posicao do dano
-        x: range(-355, -306),
-        y: range(-626, -550)
+        x: range(0, 132),
+        y: range(0, 132)
     }
 })
 
-const monster2 = new monsterSprite({
+monster1.moving = true;
+
+const monster2 = new monsterSprite({ //Monstro Verde
     position :{
-        x: canvas.width - 550,
-        y: canvas.height + 200
+        x: 1500,
+        y: 100,
+        xreal: 1795,
+        yreal: 266
+
     },
     image: monster2Image,
     frames: {
         max: 4
     },
     colision : { //Para definir a posicao do dano
-        x: range(-355, -306),
-        y: range(-626, -550)
+        x: range(0, 132),
+        y: range(0, 132)
     }
 })
 
+monster2.moving = true;
 const attackLeft = new attackSprite({
     position: {
         x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
@@ -337,6 +346,7 @@ const keys = {
 
 }
 
+const monsters = [monster, monster1, monster2]
 const movables = [background, ...boundaries, foreground, chicken, chicken1, chicken2, pig, pig1, cow, cow1, npc1, npc2, npc3, monster, monster1, monster2]
 const npcs = [npc1, npc2, npc3];
 function rectangularCollision ({rectangle1, rectangle2}){
@@ -346,29 +356,20 @@ function rectangularCollision ({rectangle1, rectangle2}){
         rectangle1.position.y + rectangle1.height >= rectangle2.position.y
     )
 }
+const ultimaExecucao = Array(monsters.length).fill(0);
 function animate(){
     window.requestAnimationFrame(animate)
     background.draw()
     boundaries.forEach((boundary) =>{
         boundary.draw()
     })
-    monster.draw(alive1)
-    monster1.draw(alive2)
-    monster2.draw(alive3)
-    monster.colision.x = range(monster.position.realx, monster.position.realx + 32)
-    monster.colision.y = range(monster.position.realy, monster.position.realy + 32)
-
-    console.log("X Monster " + monster.colision.x)
-    console.log("X Player " + player.position.xreal)
-    console.log("Y Monster " + monster.colision.y)
-    console.log("Y Player" + player.position.yreal)
-    let attack = { 
-        x: player.position.x,
-        y: player.position.y,
-    }
-
-    
-
+    monster.draw(alives[0])
+    monster1.draw(alives[1])
+    monster2.draw(alives[2])
+    monsters.forEach(mst=>{
+        mst.colision.x = range(mst.position.xreal -50, mst.position.xreal + 82);
+        mst.colision.y = range(mst.position.yreal -50, mst.position.yreal + 82);
+    })
     if (keys.space.pressed && marcadorA == true){
         //faça o attack no tile da esquerda
         attackLeft.draw()
@@ -399,85 +400,88 @@ function animate(){
     let moving = true
     player.moving = false
 
-    if (correr == 1){
-        for (let i = 0; i < boundaries.length; i++){
-            const boundary = boundaries[i]
-            if (
-                rectangularCollision({
-                    rectangle1: monster,
-                    rectangle2: {
-                        ...boundary,
-                        position: {
-                        x: boundary.position.x - 0.5,
-                        y: boundary.position.y
-                    }}
-                })
-            ) {
-                monster.moving = false
-                break
+    monsters.forEach(mst=>{
+        if (correr == 1){
+            for (let i = 0; i < boundaries.length; i++){
+                const boundary = boundaries[i]
+                if (
+                    rectangularCollision({
+                        rectangle1: mst,
+                        rectangle2: {
+                            ...boundary,
+                            position: {
+                            x: boundary.position.x - 0.5,
+                            y: boundary.position.y
+                        }}
+                    })
+                ) {
+                    mst.moving = false
+                    break
+                }
             }
         }
-    }
-
-    if (correr == 2){
-        for (let i = 0; i < boundaries.length; i++){
-            const boundary = boundaries[i]
-            if (
-                rectangularCollision({
-                    rectangle1: monster,
-                    rectangle2: {
-                        ...boundary,
-                        position: {
-                        x: boundary.position.x + 0.5,
-                        y: boundary.position.y
-                    }}
-                })
-            ) {
-                monster.moving = false
-                break
+    
+        if (correr == 2){
+            for (let i = 0; i < boundaries.length; i++){
+                const boundary = boundaries[i]
+                if (
+                    rectangularCollision({
+                        rectangle1: mst,
+                        rectangle2: {
+                            ...boundary,
+                            position: {
+                            x: boundary.position.x + 0.5,
+                            y: boundary.position.y
+                        }}
+                    })
+                ) {
+                    mst.moving = false
+                    break
+                }
             }
         }
-    }
-
-    if (correr == 3){
-        for (let i = 0; i < boundaries.length; i++){
-            const boundary = boundaries[i]
-            if (
-                rectangularCollision({
-                    rectangle1: monster,
-                    rectangle2: {
-                        ...boundary,
-                        position: {
-                        x: boundary.position.x,
-                        y: boundary.position.y + 0.5
-                    }}
-                })
-            ) {
-                monster.moving = false
-                break
+    
+        if (correr == 3){
+            for (let i = 0; i < boundaries.length; i++){
+                const boundary = boundaries[i]
+                if (
+                    rectangularCollision({
+                        rectangle1: mst,
+                        rectangle2: {
+                            ...boundary,
+                            position: {
+                            x: boundary.position.x,
+                            y: boundary.position.y + 0.5
+                        }}
+                    })
+                ) {
+                    mst.moving = false
+                    break
+                }
             }
         }
-    }
-
-    if (correr == 4){
-        for (let i = 0; i < boundaries.length; i++){
-            const boundary = boundaries[i]
-            if (
-                rectangularCollision({
-                    rectangle1: monster,
-                    rectangle2: {
-                        ...boundary,
-                        position: {
-                        x: boundary.position.x,
-                        y: boundary.position.y - 0.5
-                    }}
-                })
-            ) {
-                monster.moving = false
-                break
+    
+        if (correr == 4){
+            for (let i = 0; i < boundaries.length; i++){
+                const boundary = boundaries[i]
+                if (
+                    rectangularCollision({
+                        rectangle1: mst,
+                        rectangle2: {
+                            ...boundary,
+                            position: {
+                            x: boundary.position.x,
+                            y: boundary.position.y - 0.5
+                        }}
+                    })
+                ) {
+                    mst.moving = false
+                    break
+                }
             }
         }
-    }
+    })
+    
 
     if (keys.w.pressed && lastKey === 'w') {
         marcadorA = false;
@@ -689,71 +693,75 @@ function animate(){
         }
     }
 
-    if (Date.now() - ultimaExecucao >= 250) {  //Logica perder corações
-        if ((monster.colision.x.includes(player.position.xreal)) && (monster.colision.y.includes(player.position.yreal)) && alive1 == true){ //Para definir posicao do dano
-            contador++
-            if (contador == 1){
-                marcador3 = true
-            }else if (contador == 2){
-                marcador2 = true
-            }else if (contador == 3){
-                marcador1 = true
+    monsters.forEach((mst,i)=>{
+        console.log(alives[1])
+        if (Date.now() - ultimaExecucao[i] >= 500) {  //Logica perder corações
+            if ((mst.colision.x.includes(player.position.xreal)) && (mst.colision.y.includes(player.position.yreal)) && (alives[i] === true)){ //Para definir posicao do dano
+                console.log("entrei aqui")
+                contador++
+                if (contador == 1){
+                    marcador3 = true
+                }else if (contador == 2){
+                    marcador2 = true
+                }else if (contador == 3){
+                    marcador1 = true
+                }
             }
+            ultimaExecucao[i] = Date.now();
         }
-    ultimaExecucao = Date.now();
-    }
-    
-    if ((monster.position.xreal == player.position.xreal) && (monster.position.yreal == player.position.yreal) && (keys.space.pressed)){ //Matar o monstro
-        alive1 = false;
-        monster.moving = false;
-    }
-
-    if (alive1 == true){
-    if (monster.moving == true && marcadorGlobal == false){
-        correr = andar()
-        marcadorGlobal = true
-    }
-
-    
-    if (correr == 1 && monster.moving == true){
-        andarMonstroDireita()
-    }else if(correr == 2 && monster.moving == true){
-        andarMonstroEsquerda()
-    }else if (correr == 3 && monster.moving == true){
-        andarMonstroCima()
-    }else if (correr == 4 && monster.moving == true){
-        andarMonstroBaixo()
-    }
-    }
-
-    correr1 = andar()
-    if (monster.moving == false){
-        if (correr1 == correr){
-            correr1 = andar()
-        }else{
-            correr = correr1
+        
+        if ((mst.colision.x.includes(player.position.xreal)) && (mst.colision.y.includes(player.position.yreal)) && (alives[i] === true)  && (keys.space.pressed)){ //Matar o monstro
+            alives[i] = false;
+            mst.moving = false;
         }
-        monster.moving = true
-    }
+    
+        if (alives[i] == true){
+        if (mst.moving == true && marcadorGlobal == false){
+            correr = andar()
+            marcadorGlobal = true
+        }
+    
+        
+        if (correr == 1 && mst.moving == true){
+            andarMonstroDireita(mst)
+        }else if(correr == 2 && mst.moving == true){
+            andarMonstroEsquerda(mst)
+        }else if (correr == 3 && mst.moving == true){
+            andarMonstroCima(mst)
+        }else if (correr == 4 && mst.moving == true){
+            andarMonstroBaixo(mst)
+        }
+        }
+    
+        correr1 = andar()
+        if (mst.moving == false){
+            if (correr1 == correr){
+                correr1 = andar()
+            }else{
+                correr = correr1
+            }
+            mst.moving = true
+        }
+    })
+    
 }
-    
     animate()
 
-    function andarMonstroDireita(){
-        monster.position.x += 0.5
-        monster.position.xreal += 0.5
+    function andarMonstroDireita(mst){
+        mst.position.x += 0.5
+        mst.position.xreal += 0.5
     }
-    function andarMonstroCima(){
-        monster.position.y -= 0.5
-        monster.position.yreal -= 0.5
+    function andarMonstroCima(mst){
+        mst.position.y -= 0.5
+        mst.position.yreal -= 0.5
     }
-    function andarMonstroBaixo(){
-        monster.position.y += 0.5
-        monster.position.yreal += 0.5
+    function andarMonstroBaixo(mst){
+        mst.position.y += 0.5
+        mst.position.yreal += 0.5
     }
-    function andarMonstroEsquerda(){
-        monster.position.x -= 0.5
-        monster.position.xreal -= 0.5
+    function andarMonstroEsquerda(mst){
+        mst.position.x -= 0.5
+        mst.position.xreal -= 0.5
     }
 
     function andar() {
