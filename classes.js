@@ -31,6 +31,7 @@ class Sprite {
             if (this.frames.val < this.frames.max - 1) this.frames.val++
             else this.frames.val = 0
         }
+        
     }
 
 }
@@ -165,7 +166,7 @@ class attackSprite {
 
         this.frames.elapsed++;
 
-        if (this.frames.elapsed % 3 === 0) {
+        if (this.frames.elapsed % 10 === 0) {
             // Alterna o frame
             this.frames.val = (this.frames.val + 1) % this.frames.max;
         }
@@ -186,7 +187,8 @@ class monsterSprite {
         this.colision = colision
     }
 
-    draw() {
+    draw(alive) {
+        if (alive){
         ctx.drawImage(
             this.image,
             0, // Ponto de início no eixo x da imagem
@@ -195,14 +197,28 @@ class monsterSprite {
             this.height/4, // Altura completa da imagem
             this.position.x,
             this.position.y,
-            32, //
-            32 // Altura completa na tela
-        )
+            this.width*2, //
+            this.height/2 // Altura completa na tela
+        )    
             this.frames.elapsed++;
 
         if (this.frames.elapsed % 20 === 0) {
             // Alterna o frame
             this.frames.val = (this.frames.val + 1) % this.frames.max;
-            }         
-    }        
-}
+            }
+         
+        }else{
+            ctx.drawImage(
+                this.image,
+                16, // Ponto de início no eixo x da imagem
+                this.frames.val * this.height/4  , // Ponto de início no eixo y da imagem
+                this.image.width/ this.frames.max, 
+                this.height/4, // Altura completa da imagem
+                this.position.x,
+                this.position.y,
+                this.width*2, //
+                this.height/2 // Altura completa na tela
+            )      
+        } 
+    }
+}      

@@ -33,6 +33,14 @@ const npc2Image = new Image();
 npc2Image.src = "./images/npc2.png";
 const npc3Image = new Image();
 npc3Image.src = "./images/npc3.png";
+const monsterImage = new Image();
+monsterImage.src = "./images/monster.png";
+const monster1Image = new Image();
+monster1Image.src = "./images/monster1.png";
+const monster2Image = new Image();
+monster2Image.src = "./images/monster2.png";
+const gameover = new Image();
+gameover.src = "./images/gameover.png";
 const dialogBox = document.querySelector(".dialog");
 const head = document.querySelector(".content img");
 const text = document.querySelector(".content p");
@@ -40,14 +48,13 @@ const enter = document.querySelector(".content strong");
 let isNPC = false;
 let index = 0;
 let counter = 0;
-const monsterImage = new Image();
-monsterImage.src = "./images/monster.png";
 canvas.width = 1024;
 canvas.height = 576;
 let i = 0, j = 0, k = 0, contador = 0;
 let marcadorA = false, marcadorS = true, marcadorD = false, marcadorW = false;
-let marcador1, marcador2, marcador3;
+let marcador1, marcador2, marcador3, alive = true
 let ultimaExecucao = 0;
+let contadorMonstro = 0
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i+=54){
@@ -93,6 +100,36 @@ const monster = new monsterSprite({
     }
 })
 
+const monster1 = new monsterSprite({
+    position :{
+        x: canvas.width - 600,
+        y: canvas.height + 200
+    },
+    image: monster1Image,
+    frames: {
+        max: 4
+    },
+    colision : { //Para definir a posicao do dano
+        x: range(-355, -306),
+        y: range(-626, -550)
+    }
+})
+
+const monster2 = new monsterSprite({
+    position :{
+        x: canvas.width - 550,
+        y: canvas.height + 200
+    },
+    image: monster2Image,
+    frames: {
+        max: 4
+    },
+    colision : { //Para definir a posicao do dano
+        x: range(-355, -306),
+        y: range(-626, -550)
+    }
+})
+
 const attackLeft = new attackSprite({
     position: {
         x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
@@ -117,7 +154,7 @@ const attackDown = new attackSprite({
         y: canvas.height / 2 + 46      // Posição Y
     },
     image: playerDownAttackImage,      // Imagem do sprite
-    frames: { max: 4 }                 // Número máximo de frames
+    frames: { max: 4 },                 // Número máximo de frames
 });
 
 const attackRight = new attackSprite({
@@ -126,7 +163,7 @@ const attackRight = new attackSprite({
         y: canvas.height / 2 + 46      // Posição Y
     },
     image: playerRightAttackImage,      // Imagem do sprite
-    frames: { max: 4 }                 // Número máximo de frames
+    frames: { max: 4 }               // Número máximo de frames
 });
 
 const life1 = new lifeSprite({
@@ -237,6 +274,7 @@ const npc3 = new Sprite({
     frames: { max: 4 }
 });
 npc3.moving = true;
+
 const player = new Sprite({
     position :{
         x: canvas.width/2 - 156/8,
@@ -292,8 +330,7 @@ const keys = {
 
 }
 
-const movables = [background, ...boundaries, foreground, chicken, chicken1, chicken2, pig, pig1, cow, cow1, npc1, npc2, npc3, monster]
-
+const movables = [background, ...boundaries, foreground, chicken, chicken1, chicken2, pig, pig1, cow, cow1, npc1, npc2, npc3, monster, monster1, monster2]
 const npcs = [npc1, npc2, npc3];
 function rectangularCollision ({rectangle1, rectangle2}){
     return (rectangle1.position.x + rectangle1.width >= rectangle2.position.x &&
@@ -307,10 +344,22 @@ function animate(){
     background.draw()
     boundaries.forEach((boundary) =>{
         boundary.draw()
-   
     })
+    monster.draw(alive)
+    monster1.draw(alive)
+    monster2.draw(alive)
+
+
+    
+    let attack = { 
+        x: player.position.x,
+        y: player.position.y,
+    }
 
     if (keys.space.pressed && marcadorA == true){
+        //faça o attack no tile da esquerda
+        console.log(player.position.x - 26 )    
+        console.log(player.position.y + 26 )
         attackLeft.draw()
     }else if (keys.space.pressed && marcadorW == true){
         attackUp.draw()    
@@ -322,7 +371,6 @@ function animate(){
         player.draw()
     }
     foreground.draw()
-    monster.draw()
     chicken.draw(0, 25)
     chicken1.draw(0, 35)
     chicken2.draw(0, 30)
@@ -330,12 +378,12 @@ function animate(){
     pig1.draw(32, 35)
     cow.draw(64, 30)
     cow1.draw(64, 35)
-    life1.draw(marcador1)
-    life2.draw(marcador2)
-    life3.draw(marcador3)
     npc1.draw();   
     npc2.draw();
     npc3.draw();
+    life1.draw(marcador1)
+    life2.draw(marcador2)
+    life3.draw(marcador3)
 
     let moving = true
     player.moving = false
@@ -536,10 +584,10 @@ function animate(){
         movables.forEach((movable) => {
             movable.position.y -=2
         })
-
     }
-    if (Date.now() - ultimaExecucao >= 200) {  //Logica perder corações
-        if ((monster.colision.x.includes(background.position.x)) && (monster.colision.y.includes(background.position.y))){ //Para definir posicao do dano
+
+    if (Date.now() - ultimaExecucao >= 250) {  //Logica perder corações
+        if ((monster.colision.x.includes(background.position.x)) && (monster.colision.y.includes(background.position.y)) && alive == true){ //Para definir posicao do dano
             console.log ("Dano")
             contador++
             console.log (contador)
@@ -549,13 +597,41 @@ function animate(){
                 marcador2 = true
             }else if (contador == 3){
                 marcador1 = true
-                console.log("Game Over")
             }
         }
     ultimaExecucao = Date.now();
     }
+    if ((monster.colision.x.includes(background.position.x - 15)) && (monster.colision.y.includes(background.position.y - 15) && (keys.space.pressed) )){ //Matar o monstro
+        alive = false;
+    }
+
+    /*if (contadorMonstro<600){ //Mover o monstro
+        andarMonstroDireita()
+    }else if (contadorMonstro<1200){
+        andarMonstroCima()
+    }else if (contadorMonstro<1800){
+        andarMonstroEsquerda()
+    }else if (contadorMonstro<2400){
+        andarMonstroBaixo()
+    }else{
+        contadorMonstro = 0 
+    }
+    contadorMonstro++*/
 }
 animate()
+
+function andarMonstroDireita(){
+    monster.position.x += 0.3
+}
+function andarMonstroCima(){
+    monster.position.y -= 0.3
+}
+function andarMonstroBaixo(){
+    monster.position.y += 0.3
+}
+function andarMonstroEsquerda(){
+    monster.position.x -= 0.3
+}
 
 let lastKey = ''
 
@@ -586,17 +662,14 @@ window.addEventListener('keydown', (e) => {
         case 'w':
             keys.w.pressed = true
             lastKey = 'w'
-            console.log(e.key);
             break;
         case 'a':
             keys.a.pressed = true
             lastKey = 'a'
-            console.log(e.key);
             break;
         case 's':
             keys.s.pressed = true
             lastKey = 's'
-            console.log(e.key);
             break;
         case 'd':
             keys.d.pressed = true
