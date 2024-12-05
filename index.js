@@ -39,8 +39,7 @@ const monster1Image = new Image();
 monster1Image.src = "./images/monster1.png";
 const monster2Image = new Image();
 monster2Image.src = "./images/monster2.png";
-const gameover = new Image();
-gameover.src = "./images/gameover.png";
+const gameover = document.querySelector(".gameover")
 const dialogBox = document.querySelector(".dialog");
 const head = document.querySelector(".content img");
 const text = document.querySelector(".content p");
@@ -705,6 +704,8 @@ function animate(){
                     marcador2 = true
                 }else if (contador == 3){
                     marcador1 = true
+                    gameover.style.backgroundImage = "url('images/gameover.png')"
+                    gameover.style.display = "block"
                 }
             }
             ultimaExecucao[i] = Date.now();
@@ -743,7 +744,10 @@ function animate(){
             mst.moving = true
         }
     })
-    
+    if ((alives[0] === false) && (alives[1] === false) && (alives[2] === false)){
+        gameover.style.backgroundImage = "url('images/youwin.png')"
+        gameover.style.display = "block"
+    } 
 }
     animate()
 
