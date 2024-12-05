@@ -51,10 +51,11 @@ let counter = 0;
 canvas.width = 1024;
 canvas.height = 576;
 let i = 0, j = 0, k = 0, contador = 0;
-let marcadorA = false, marcadorS = true, marcadorD = false, marcadorW = false;
-let marcador1, marcador2, marcador3, alive = true
+let marcadorA = false, marcadorS = true, marcadorD = false, marcadorW = false, marcadorGlobal = false
+let marcador1, marcador2, marcador3, alive1 = true, alive2 = true, alive3 =true
 let ultimaExecucao = 0;
 let contadorMonstro = 0
+let correr, correr1
 
 const collisionsMap = []
 for (let i = 0; i < collisions.length; i+=54){
@@ -85,6 +86,7 @@ function range(start, end) {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 }
 
+
 const monster = new monsterSprite({
     position :{
         x: canvas.width - 500,
@@ -95,11 +97,12 @@ const monster = new monsterSprite({
         max: 4
     },
     colision : { //Para definir a posicao do dano
-        x: range(-355, -306),
-        y: range(-626, -550)
+        x: 300,
+        y: 300
     }
 })
 
+monster.moving = true;
 const monster1 = new monsterSprite({
     position :{
         x: canvas.width - 600,
@@ -278,7 +281,9 @@ npc3.moving = true;
 const player = new Sprite({
     position :{
         x: canvas.width/2 - 156/8,
-        y: canvas.height/2 + 46
+        y: canvas.height/2 + 46,
+        xreal: 490, //Coordenada real no mapa
+        yreal: 350  //Coordenada real no mapa
     },
     image: playerDownImage,
     frames: {
@@ -345,12 +350,14 @@ function animate(){
     boundaries.forEach((boundary) =>{
         boundary.draw()
     })
-    monster.draw(alive)
-    monster1.draw(alive)
-    monster2.draw(alive)
+    monster.draw(alive1)
+    monster1.draw(alive2)
+    monster2.draw(alive3)
+    monster.colision.x = range(monster.position.x, monster.position.x + 32)
+    monster.colision.y = range(monster.position.y, monster.position.y + 32)
 
-
-    
+    console.log("X: " + player.position.xreal)
+    console.log("Y: " + player.position.yreal)
     let attack = { 
         x: player.position.x,
         y: player.position.y,
@@ -358,8 +365,6 @@ function animate(){
 
     if (keys.space.pressed && marcadorA == true){
         //faça o attack no tile da esquerda
-        console.log(player.position.x - 26 )    
-        console.log(player.position.y + 26 )
         attackLeft.draw()
     }else if (keys.space.pressed && marcadorW == true){
         attackUp.draw()    
@@ -387,6 +392,86 @@ function animate(){
 
     let moving = true
     player.moving = false
+
+    if (correr == 1){
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: monster,
+                    rectangle2: {
+                        ...boundary,
+                        position: {
+                        x: boundary.position.x - 2,
+                        y: boundary.position.y
+                    }}
+                })
+            ) {
+                monster.moving = false
+                break
+            }
+        }
+    }
+
+    if (correr == 2){
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: monster,
+                    rectangle2: {
+                        ...boundary,
+                        position: {
+                        x: boundary.position.x + 2,
+                        y: boundary.position.y
+                    }}
+                })
+            ) {
+                monster.moving = false
+                break
+            }
+        }
+    }
+
+    if (correr == 3){
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: monster,
+                    rectangle2: {
+                        ...boundary,
+                        position: {
+                        x: boundary.position.x,
+                        y: boundary.position.y + 2
+                    }}
+                })
+            ) {
+                monster.moving = false
+                break
+            }
+        }
+    }
+
+    if (correr == 4){
+        for (let i = 0; i < boundaries.length; i++){
+            const boundary = boundaries[i]
+            if (
+                rectangularCollision({
+                    rectangle1: monster,
+                    rectangle2: {
+                        ...boundary,
+                        position: {
+                        x: boundary.position.x,
+                        y: boundary.position.y - 2
+                    }}
+                })
+            ) {
+                monster.moving = false
+                break
+            }
+        }
+    }
 
     if (keys.w.pressed && lastKey === 'w') {
         marcadorA = false;
@@ -435,6 +520,9 @@ function animate(){
             movables.forEach((movable) => {
                 movable.position.y +=2
             });
+            if (moving == true){
+            player.position.yreal -=2
+            }
         }
     }else if(keys.a.pressed && lastKey === 'a') {
         marcadorA = true;
@@ -485,6 +573,9 @@ function animate(){
         movables.forEach((movable) => {
             movable.position.x +=2
         })
+        if (moving == true){
+        player.position.xreal -=2
+        }
     }else if(keys.d.pressed && lastKey === 'd') {
         marcadorA = false;
         marcadorS = false;
@@ -534,6 +625,9 @@ function animate(){
         movables.forEach((movable) => {
             movable.position.x -=2
         })
+        if (moving == true){
+        player.position.xreal +=2
+        }
     }
     else if(keys.s.pressed && lastKey === 's') {
         marcadorA = false;
@@ -584,13 +678,14 @@ function animate(){
         movables.forEach((movable) => {
             movable.position.y -=2
         })
+        if (moving == true){
+        player.position.yreal +=2
+        }
     }
 
     if (Date.now() - ultimaExecucao >= 250) {  //Logica perder corações
-        if ((monster.colision.x.includes(background.position.x)) && (monster.colision.y.includes(background.position.y)) && alive == true){ //Para definir posicao do dano
-            console.log ("Dano")
+        if ((monster.colision.x.includes(background.position.x)) && (monster.colision.y.includes(background.position.y)) && alive1 == true){ //Para definir posicao do dano
             contador++
-            console.log (contador)
             if (contador == 1){
                 marcador3 = true
             }else if (contador == 2){
@@ -601,37 +696,59 @@ function animate(){
         }
     ultimaExecucao = Date.now();
     }
-    if ((monster.colision.x.includes(background.position.x - 15)) && (monster.colision.y.includes(background.position.y - 15) && (keys.space.pressed) )){ //Matar o monstro
-        alive = false;
+    if ((monster.colision.x.includes(player.position.xreal)) && (monster.colision.y.includes(player.position.yreal) && (keys.space.pressed) )){ //Matar o monstro
+        alive1 = false;
+        monster.moving = false;
     }
 
-    /*if (contadorMonstro<600){ //Mover o monstro
+    if (alive1 == true){
+    if (monster.moving == true && marcadorGlobal == false){
+        correr = andar()
+        marcadorGlobal = true
+    }
+
+    
+    if (correr == 1 && monster.moving == true){
         andarMonstroDireita()
-    }else if (contadorMonstro<1200){
-        andarMonstroCima()
-    }else if (contadorMonstro<1800){
+    }else if(correr == 2 && monster.moving == true){
         andarMonstroEsquerda()
-    }else if (contadorMonstro<2400){
+    }else if (correr == 3 && monster.moving == true){
+        andarMonstroCima()
+    }else if (correr == 4 && monster.moving == true){
         andarMonstroBaixo()
-    }else{
-        contadorMonstro = 0 
     }
-    contadorMonstro++*/
-}
-animate()
+    }
+    
 
-function andarMonstroDireita(){
-    monster.position.x += 0.3
+    correr1 = andar()
+    if (monster.moving == false){
+        if (correr1 == correr){
+            correr1 = andar()
+        }else{
+            correr = correr1
+        }
+        monster.moving = true
+    }
 }
-function andarMonstroCima(){
-    monster.position.y -= 0.3
-}
-function andarMonstroBaixo(){
-    monster.position.y += 0.3
-}
-function andarMonstroEsquerda(){
-    monster.position.x -= 0.3
-}
+    animate()
+
+    function andarMonstroDireita(){
+        monster.position.x += 0.5
+    }
+    function andarMonstroCima(){
+        monster.position.y -= 0.5
+    }
+    function andarMonstroBaixo(){
+        monster.position.y += 0.5
+    }
+    function andarMonstroEsquerda(){
+        monster.position.x -= 0.5
+    }
+
+    function andar() {
+        // Gera um número aleatório entre 1 e 4
+        return Math.floor(Math.random() * 4) + 1;
+    }
 
 let lastKey = ''
 

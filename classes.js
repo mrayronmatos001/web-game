@@ -201,6 +201,8 @@ class monsterSprite {
             this.height/2 // Altura completa na tela
         )    
             this.frames.elapsed++;
+            ctx.fillStyle = 'rgba(255, 0, 0, 0)'
+            ctx.fillRect(this.position.x, this.position.y, 32, 32)
 
         if (this.frames.elapsed % 20 === 0) {
             // Alterna o frame
