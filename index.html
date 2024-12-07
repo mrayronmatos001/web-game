@@ -4,11 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>web game</title>
+    <title>TADS Adventure Game</title>
 </head>
 <body>
-    <canvas></canvas>
+    <script 
+    src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js" 
+    integrity="sha512-xi/RZRIF/S0hJ+yJJYuZ5yk6/8pCiRlEXZzoguSMl+vk2i3m6UjUO/WcZ11blRL/O+rnj94JRGwt/CHbc9+6EA==" 
+    crossorigin="anonymous" 
+    referrerpolicy="no-referrer"></script>
+    <div class="display">
+        <canvas class = "borda"></canvas>
+        <div class="dialog">
+            <div class="content">
+                <img src="images/headplayer.png" alt="" srcset="">
+                <p>TEST</p>
+                <strong>[ENTER]</strong>
+            </div>
+        </div>
+    </div>
+    <div class="gameover"></div>
+    <script src="data/audio.js"></script>
     <script src="data/collisions.js"></script>
-    <script src="index.js"></script>
+    <script src="classes.js"></script>
+    <script src="index.js"></script> 
 </body>
 </html>
