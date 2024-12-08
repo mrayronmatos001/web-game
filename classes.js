@@ -132,50 +132,132 @@ class Animal {
     }
 }
 
-class attackSprite {
-    constructor({ position, image, frames = { max: 4 } }) {
-        this.position = position;
-        this.image = image;
-        this.frames = { ...frames, val: 0, elapsed: 0 };
-        this.size = { width: 34, height: 46 }; // Largura e altura do frame
+class Player {
+    constructor({position, velocity, image, frames = {max: 1} , sprites, direction}){
+        this.position = position
+        this.image = image
+        this.frames = {...frames, val: 0, elapsed: 0}
         this.image.onload = () => {
-            this.originalWidth = this.image.width;
-            this.originalHeight = this.image.height;
-            this.frameHeight = this.originalHeight; // Define a altura dos frames como a altura da imagem
-        };
+            this.width = this.image.width / this.frames.max
+            this.height = this.image.height / 10
+        }
+        this.moving = false
+        this.sprites = sprites
+        this.direction = direction
     }
-
-    draw() {
-        const sourceHeight = this.frameHeight; // Usa a altura total da imagem ou a altura dos frames
-        const frameWidth = [28, 64, 37, 27]; // Largura dos frames conforme especificado
-        const sourceX = [0, 28, 92, 129][this.frames.val]; // Valores no eixo X para cada frame
-        const sourceY = 0; // Eixo Y fixo
-
-
+    
+    
+    draw(marcador) {
+        if (marcador == 1){
+        ctx.save();
+        ctx.scale(-1, 1);
         ctx.drawImage(
             this.image,
-            sourceX,
-            sourceY,
-            frameWidth[this.frames.val], // Largura específica de cada frame
-            sourceHeight, // Usa a altura total da imagem
-            this.position.x,
-            this.position.y,
-            this.size.width,
-            this.size.height
-        );
-
-        this.frames.elapsed++;
-
-        if (this.frames.elapsed % 10 === 0) {
-            // Alterna o frame
-            this.frames.val = (this.frames.val + 1) % this.frames.max;
+            this.frames.val * this.width,
+            this.direction,
+            this.image.width/ this.frames.max,
+            this.image.height/10,
+            - this.position.x - this.width * 2 + 25,
+            this.position.y - 40,
+            this.image.width/ this.frames.max * 2,
+            this.image.height/10 * 2
+        )
+        ctx.restore();
+        if (!this.moving) return
+        if (this.frames.max > 1) {
+            this.frames.elapsed++
         }
-    
+        if (this.frames.elapsed % 15 === 0){
+            if (this.frames.val < this.frames.max - 1) this.frames.val++
+            else this.frames.val = 0
+        }
+    }else if (marcador == 2){ //Normal
+        ctx.drawImage(
+            this.image,
+            this.frames.val * this.width,
+            this.direction,
+            this.image.width/ this.frames.max,
+            this.image.height/10,
+            this.position.x - 25,
+            this.position.y - 40,
+            this.image.width/ this.frames.max * 2,
+            this.image.height/10 * 2
+        )
+        if (!this.moving) return
+        if (this.frames.max > 1) {
+            this.frames.elapsed++
+        }
+        if (this.frames.elapsed % 15 === 0){
+            if (this.frames.val < this.frames.max - 1) this.frames.val++
+            else this.frames.val = 0
+    }    
+    }else if(marcador == 3){
+        ctx.drawImage(
+            this.image,
+            this.frames.val * this.width,
+            0,
+            this.image.width/ this.frames.max,
+            this.image.height/10,
+            this.position.x - 25,
+            this.position.y - 40,
+            this.image.width/ this.frames.max * 2,
+            this.image.height/10 * 2
+        )
+        if (this.frames.max > 1) {
+            this.frames.elapsed++
+        }
+        if (this.frames.elapsed % 15 === 0){
+            if (this.frames.val < this.frames.max - 1) this.frames.val++
+            else this.frames.val = 0
+    }   
+    }else if (marcador == 4){
+            ctx.save();
+            ctx.scale(-1, 1);
+            ctx.drawImage(
+                this.image,
+                this.frames.val * this.width,
+                this.direction + 1,
+                this.image.width/ this.frames.max,
+                this.image.height/10,
+                - this.position.x - this.width * 2 + 25,
+                this.position.y - 40,
+                this.image.width/ this.frames.max * 2,
+                this.image.height/10 * 2
+            )
+            if (this.frames.max > 1) {
+                this.frames.elapsed++
+            }   
+            if (this.frames.elapsed % 18 === 0){
+                if (this.frames.val < 3) this.frames.val++
+                else this.frames.val = 0
+            }
+            ctx.restore();
+
+    }else if (marcador == 5){
+        ctx.drawImage(
+            this.image,
+            this.frames.val * this.width,
+            this.direction + 1,
+            this.image.width/ this.frames.max,
+            this.image.height/10,
+            this.position.x - 25,
+            this.position.y - 40,
+            this.image.width/ this.frames.max * 2,
+            this.image.height/10 * 2
+        )
+        if (this.frames.max > 1) {
+            this.frames.elapsed++
+        }   
+        if (this.frames.elapsed % 18 === 0){
+            if (this.frames.val < 3) this.frames.val++
+            else this.frames.val = 0
+        }
     }
+}
 }
 
 class monsterSprite {
-    constructor({position, image, frames = {max: 1}, sprites, colision}) {
+    constructor({position, image, frames = {max: 1}, sprites}) {
         this.position = position
         this.image = image
         this.frames = {...frames, val: 0, elapsed: 0}
@@ -184,7 +266,6 @@ class monsterSprite {
             this.height = this.image.height
         }
         this.sprites = sprites
-        this.colision = colision
     }
 
     draw(alive) {
@@ -201,8 +282,6 @@ class monsterSprite {
             this.height/2 // Altura completa na tela
         )    
             this.frames.elapsed++;
-            ctx.fillStyle = 'rgba(255, 0, 0, 0)'
-            ctx.fillRect(this.position.x, this.position.y, 32, 32)
 
         if (this.frames.elapsed % 20 === 0) {
             // Alterna o frame

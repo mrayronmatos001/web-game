@@ -6,13 +6,13 @@ audio.Map.play()
 const image = new Image();
 image.src = "./images/little-town.png";
 const playerDownImage = new Image();
-playerDownImage.src = "./images/playerDown.png";
+playerDownImage.src = "./images/player.png";
 const playerUpImage = new Image();
-playerUpImage.src = "./images/playerUp.png";
+playerUpImage.src = "./images/player.png";
 const playerLeftImage = new Image();
-playerLeftImage.src = "./images/playerLeft.png";
+playerLeftImage.src = "./images/player.png";
 const playerRightImage = new Image();
-playerRightImage.src = "./images/playerRight.png";
+playerRightImage.src = "./images/player.png";
 const foregroundImage = new Image();
 foregroundImage.src = "./images/foregroundObjects.png";
 const lifeImage = new Image();
@@ -20,13 +20,13 @@ lifeImage.src = "./images/life.png";
 const animalsImage = new Image();
 animalsImage.src = "./images/animals.png";
 const playerLeftAttackImage = new Image();
-playerLeftAttackImage.src = "./images/playerAtkLeft.png";
+playerLeftAttackImage.src = "./images/player.png";
 const playerRightAttackImage = new Image();
-playerRightAttackImage.src = "./images/playerAtkRight.png";
+playerRightAttackImage.src = "./images/player.png";
 const playerUpAttackImage = new Image();
-playerUpAttackImage.src = "./images/playerAtkUp.png";
+playerUpAttackImage.src = "./images/player.png";
 const playerDownAttackImage = new Image();
-playerDownAttackImage.src = "./images/playerAtkDown.png";
+playerDownAttackImage.src = "./images/player.png";
 const npc1Image = new Image();
 npc1Image.src = "./images/npc1.png";
 const npc2Image = new Image();
@@ -56,6 +56,7 @@ let contadorMonstro = 0
 let correr, correr1
 const alives = [alive1, alive2, alive3]
 const collisionsMap = []
+let lastKey = ''
 
 for (let i = 0; i < collisions.length; i+=54){
     collisionsMap.push(collisions.slice(i, 54 + i))
@@ -90,16 +91,10 @@ const monster = new monsterSprite({ //Monstro Vermelho
     position :{
         x: 400,  
         y: 700,
-        xreal: 695,
-        yreal: 870
     },
     image: monsterImage,
     frames: {
         max: 4
-    },
-    colision : { //Para definir a posicao do dano
-        x: range(0, 132),
-        y: range(0, 132)
     }
 })
 
@@ -109,16 +104,10 @@ const monster1 = new monsterSprite({ //Monstro Azul
     position :{
         x: 1500,
         y: 700,
-        xreal: 1795,
-        yreal: 864
     },
     image: monster1Image,
     frames: {
         max: 4
-    },
-    colision : { //Para definir a posicao do dano
-        x: range(0, 132),
-        y: range(0, 132)
     }
 })
 
@@ -128,22 +117,15 @@ const monster2 = new monsterSprite({ //Monstro Verde
     position :{
         x: 1500,
         y: 100,
-        xreal: 1795,
-        yreal: 266
-
     },
     image: monster2Image,
     frames: {
         max: 4
-    },
-    colision : { //Para definir a posicao do dano
-        x: range(0, 132),
-        y: range(0, 132)
     }
 })
 
 monster2.moving = true;
-const attackLeft = new attackSprite({
+const attackLeft = new Player({
     position: {
         x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
         y: canvas.height / 2 + 46      // Posição Y
@@ -152,7 +134,7 @@ const attackLeft = new attackSprite({
     frames: { max: 4 }                 // Número máximo de frames
 });
 
-const attackUp = new attackSprite({
+const attackUp = new Player({
     position: {
         x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
         y: canvas.height / 2 + 46      // Posição Y
@@ -161,7 +143,7 @@ const attackUp = new attackSprite({
     frames: { max: 4 }                 // Número máximo de frames
 });
 
-const attackDown = new attackSprite({
+const attackDown = new Player({
     position: {
         x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
         y: canvas.height / 2 + 46      // Posição Y
@@ -170,7 +152,7 @@ const attackDown = new attackSprite({
     frames: { max: 4 },                 // Número máximo de frames
 });
 
-const attackRight = new attackSprite({
+const attackRight = new Player({
     position: {
         x: canvas.width / 2 - 156 / 8,  // Ajuste da posição X
         y: canvas.height / 2 + 46      // Posição Y
@@ -288,12 +270,10 @@ const npc3 = new Sprite({
 });
 npc3.moving = true;
 
-const player = new Sprite({
+const player = new Player({
     position :{
-        x: canvas.width/2 - 156/8,
-        y: canvas.height/2 + 46,
-        xreal: 490 - offset.x, //Coordenada real no mapa
-        yreal: 350 - offset.y //Coordenada real no mapa
+        x: canvas.width/2 - 288/6,
+        y: canvas.height/2 + 480/10,
     },
     image: playerDownImage,
     frames: {
@@ -303,7 +283,8 @@ const player = new Sprite({
         up: playerUpImage,
         left: playerLeftImage,
         right: playerRightImage,
-        down: playerDownImage
+        down: playerDownImage,
+        direction: 0
     }
 })
 
@@ -365,22 +346,29 @@ function animate(){
     monster.draw(alives[0])
     monster1.draw(alives[1])
     monster2.draw(alives[2])
-    monsters.forEach(mst=>{
-        mst.colision.x = range(mst.position.xreal -50, mst.position.xreal + 82);
-        mst.colision.y = range(mst.position.yreal -50, mst.position.yreal + 82);
-    })
-    if (keys.space.pressed && marcadorA == true){
-        //faça o attack no tile da esquerda
-        attackLeft.draw()
-    }else if (keys.space.pressed && marcadorW == true){
-        attackUp.draw()    
-    }else if (keys.space.pressed && marcadorS == true){
-        attackDown.draw()    
-    }else if (keys.space.pressed && marcadorD == true){
-        attackRight.draw()    
+
+    if (keys.space.pressed === true && marcadorA === true){
+        player.direction = 336
+        for(i = 0; i < 3; i++) player.draw(4)
+    }else if (keys.space.pressed === true && marcadorW){
+        player.direction = 384
+        for(i = 0; i < 3; i++) player.draw(5)
+    }else if (keys.space.pressed === true && marcadorS){
+        player.direction = 288
+        for(i = 0; i < 3; i++) player.draw(5)
+    }else if (keys.space.pressed === true && marcadorD){
+        player.direction = 336
+        for(i = 0; i < 3; i++) player.draw(5)
     }else{
-        player.draw()
+        if (keys.w.pressed === false && keys.s.pressed === false && keys.a.pressed === false && keys.d.pressed === false){
+            player.draw(3)
+        }else if (marcadorA == true){
+            player.draw(1)
+        }else{
+            player.draw(2)
+        }
     }
+
     foreground.draw()
     chicken.draw(0, 25)
     chicken1.draw(0, 35)
@@ -398,7 +386,6 @@ function animate(){
 
     let moving = true
     player.moving = false
-
     monsters.forEach(mst=>{
         if (correr == 1){
             for (let i = 0; i < boundaries.length; i++){
@@ -489,6 +476,7 @@ function animate(){
         marcadorW = true;
         player.moving = true
         player.image = player.sprites.up
+        player.direction = 240
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
             if (
@@ -540,6 +528,7 @@ function animate(){
         marcadorW = false;
         player.moving = true
         player.image = player.sprites.left
+        player.direction = 192
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
             if (
@@ -582,9 +571,6 @@ function animate(){
         movables.forEach((movable) => {
             movable.position.x +=2
         })
-        if (moving == true){
-        player.position.xreal -=2
-        }
     }else if(keys.d.pressed && lastKey === 'd') {
         marcadorA = false;
         marcadorS = false;
@@ -592,6 +578,7 @@ function animate(){
         marcadorW = false;
         player.moving = true
         player.image = player.sprites.right
+        player.direction = 192
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
             if (
@@ -634,9 +621,6 @@ function animate(){
         movables.forEach((movable) => {
             movable.position.x -=2
         })
-        if (moving == true){
-        player.position.xreal +=2
-        }
     }
     else if(keys.s.pressed && lastKey === 's') {
         marcadorA = false;
@@ -645,6 +629,7 @@ function animate(){
         marcadorW = false;
         player.moving = true
         player.image = player.sprites.down
+        player.direction = 144
         for (let i = 0; i < boundaries.length; i++){
             const boundary = boundaries[i]
             if (
@@ -693,10 +678,8 @@ function animate(){
     }
 
     monsters.forEach((mst,i)=>{
-        console.log(alives[1])
         if (Date.now() - ultimaExecucao[i] >= 500) {  //Logica perder corações
-            if ((mst.colision.x.includes(player.position.xreal)) && (mst.colision.y.includes(player.position.yreal)) && (alives[i] === true)){ //Para definir posicao do dano
-                console.log("entrei aqui")
+            if ((rectangularCollision({rectangle1: mst, rectangle2: player}) && (alives[i] === true))){ //Para definir posicao do dano
                 contador++
                 if (contador == 1){
                     marcador3 = true
@@ -711,7 +694,7 @@ function animate(){
             ultimaExecucao[i] = Date.now();
         }
         
-        if ((mst.colision.x.includes(player.position.xreal)) && (mst.colision.y.includes(player.position.yreal)) && (alives[i] === true)  && (keys.space.pressed)){ //Matar o monstro
+        if ((rectangularCollision({rectangle1: mst, rectangle2: player}) && (alives[i] === true) && (keys.space.pressed))){ //Matar o monstro
             alives[i] = false;
             mst.moving = false;
         }
@@ -753,27 +736,21 @@ function animate(){
 
     function andarMonstroDireita(mst){
         mst.position.x += 0.5
-        mst.position.xreal += 0.5
     }
     function andarMonstroCima(mst){
         mst.position.y -= 0.5
-        mst.position.yreal -= 0.5
     }
     function andarMonstroBaixo(mst){
         mst.position.y += 0.5
-        mst.position.yreal += 0.5
     }
     function andarMonstroEsquerda(mst){
         mst.position.x -= 0.5
-        mst.position.xreal -= 0.5
     }
 
     function andar() {
         // Gera um número aleatório entre 1 e 4
         return Math.floor(Math.random() * 4) + 1;
     }
-
-let lastKey = ''
 
 let dialogs = {
     npc1: [
